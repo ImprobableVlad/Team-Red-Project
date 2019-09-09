@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{96FF34FB-4167-4666-35F7-0598FCC0EA44}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "TeamRedProject",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
