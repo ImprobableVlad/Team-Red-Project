@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Engine.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MountainActor.generated.h"
@@ -12,7 +13,7 @@ class TEAMREDPROJECT_API AMountainActor : public AActor
 	GENERATED_BODY()
 
 private:
-	void generateMountain(int32 seed);
+	void updateHeight(int32 i, int32 j, int32 size, TArray<TArray<int32>>* heights, FRandomStream* rs);
 
 public:	
 	// Sets default values for this actor's properties
@@ -25,8 +26,24 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UInstancedStaticMeshComponent* InstancedComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actor)
-	int32 size = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	int32 Width;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	int32 Height;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	float Drop1Prob;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	float Drop2Prob;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = UpdateMountain, Category = MountainParameters)
+	int32 Seed;
+
+	UFUNCTION(BlueprintCallable, Category = MountainParameters)
+	void UpdateMountain();
 };
