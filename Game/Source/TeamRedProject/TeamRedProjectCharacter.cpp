@@ -26,6 +26,8 @@ ATeamRedProjectCharacter::ATeamRedProjectCharacter(const FObjectInitializer& Obj
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
+	ControllerInputEnabled = true;
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -81,6 +83,22 @@ void ATeamRedProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeamRedProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeamRedProjectCharacter::TouchStopped);
+}
+
+void ATeamRedProjectCharacter::AddControllerYawInput(float Val)
+{
+	if (ControllerInputEnabled)
+	{
+		Super::AddControllerYawInput(Val);
+	}
+}
+
+void ATeamRedProjectCharacter::AddControllerPitchInput(float Val)
+{
+	if (ControllerInputEnabled)
+	{
+		Super::AddControllerPitchInput(Val);
+	}
 }
 
 void ATeamRedProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

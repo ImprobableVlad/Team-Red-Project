@@ -24,12 +24,19 @@ public:
 	virtual void BeginPlay() override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
 	float BaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Misc)
+	bool ControllerInputEnabled;
+
+	void AddControllerYawInput(float Val);
+
+	void AddControllerPitchInput(float Val);
 
 protected:
 
