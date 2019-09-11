@@ -35,9 +35,9 @@ void AMountainActor::Tick(float DeltaTime)
 
 }
 
-void AMountainActor::updateHeight(int32 i, int32 j, int32 Width, TArray<TArray<int32>>* heights, FRandomStream* rs) {
+void AMountainActor::updateHeight(int32 i, int32 j, TArray<TArray<int32>>* heights, FRandomStream* rs) {
 	
-	int32 maxHeight = 0;
+	int32 maxHeight = -9999;
 	int di[] = { -1, 0, 1, 1, 1, 0,-1,-1 };
 	int dj[] = { -1,-1,-1, 0, 1, 1, 1, 0 };
 	for (int32 d = 0; d < 8; d++) {
@@ -56,8 +56,6 @@ void AMountainActor::updateHeight(int32 i, int32 j, int32 Width, TArray<TArray<i
 	else {
 		(*heights)[i][j] = maxHeight;
 	}
-	if ((*heights)[i][j] <= 0)
-		(*heights)[i][j] = 0;
 }
 
 void AMountainActor::UpdateMountain() {
@@ -72,7 +70,7 @@ void AMountainActor::UpdateMountain() {
 	rs.Initialize(Seed);
 	TArray<TArray<int32>> heights;
 	TArray<int32> row;
-	row.Init(0, Width);
+	row.Init(-9999, Width);
 	heights.Init(row, Width);
 
 	// generate height field
@@ -80,19 +78,32 @@ void AMountainActor::UpdateMountain() {
 
 	for (int32 offset = 1; offset <= Width / 2; offset++) {
 		for (int32 j = Width / 2 - offset + 1; j <= Width / 2 + offset - 1; j++) {
-			updateHeight(Width / 2 + offset, j, Width, &heights, &rs);
-			updateHeight(Width / 2 - offset, j, Width, &heights, &rs);
+			updateHeight(Width / 2 + offset, j, &heights, &rs);
+			updateHeight(Width / 2 - offset, j, &heights, &rs);
 		}
 		for (int32 i = Width / 2 - offset; i <= Width / 2 + offset; i++) {
-			updateHeight(i, Width / 2 + offset, Width, &heights, &rs);
-			updateHeight(i, Width / 2 - offset, Width, &heights, &rs);
+			updateHeight(i, Width / 2 + offset, &heights, &rs);
+			updateHeight(i, Width / 2 - offset, &heights, &rs);
+		}
+	}
+
+	// generate surrounding plateaus
+	for (int32 i = 0; i < Width; i++) {
+		for (int32 j = 0; j < Width; j++) {
+			int32 h = heights[i][j];
+			if (h < 1) {
+				if (h > -PlateauSize * PlateauAmount) {
+					heights[i][j] = PlateauAmount - (-h / PlateauSize);
+				}
+			}
+			else heights[i][j] += PlateauAmount;
 		}
 	}
 
 	// create mountain columns based on heightfield
 	for (int32 i = 0; i < Width; i++) {
 		for (int32 j = 0; j < Width; j++) {
-			if (heights[i][j] == 0)
+			if (heights[i][j] <= 0)
 				continue;
 			FTransform cubeTransform;
 			FVector originOffset = FVector(-100*Width*0.5, -100 * Width*0.5, 0);
@@ -101,6 +112,9 @@ void AMountainActor::UpdateMountain() {
 			InstancedComponent->AddInstance(cubeTransform);
 		}
 	}
+
+	// Register InstancedStaticMeshComponent to generate NavMesh
+	UpdateComponentTransforms();
 }
 
 void AMountainActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

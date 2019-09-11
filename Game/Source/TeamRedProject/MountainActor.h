@@ -13,7 +13,7 @@ class TEAMREDPROJECT_API AMountainActor : public AActor
 	GENERATED_BODY()
 
 private:
-	void updateHeight(int32 i, int32 j, int32 size, TArray<TArray<int32>>* heights, FRandomStream* rs);
+	void updateHeight(int32 i, int32 j, TArray<TArray<int32>>* heights, FRandomStream* rs);
 
 public:	
 	// Sets default values for this actor's properties
@@ -40,6 +40,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
 	float Drop2Prob;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	float PlateauSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MountainParameters)
+	float PlateauAmount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = UpdateMountain, Category = MountainParameters)
 	int32 Seed;
