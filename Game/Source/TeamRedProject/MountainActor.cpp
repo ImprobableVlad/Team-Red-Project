@@ -100,6 +100,43 @@ void AMountainActor::UpdateMountain() {
 		}
 	}
 
+	// smooth mountain
+	TArray<TArray<bool>> fillMask;
+	TArray<bool> fillRow;
+	TArray<FVector2D> floodStack;
+	int32 di[] = {0, 1, 0, -1};
+	int32 dj[] = {1, 0, -1, 0};
+	for (int32 h = 1; h < Height + PlateauAmount; h++) {
+		// reinit
+		fillRow.Init(false, Width);
+		fillMask.Init(fillRow, Width);
+		floodStack.Empty();
+		fillMask[0][0] = true;
+		floodStack.Add(FVector2D(0,0));
+		// floodfill from ouside to inside
+		while (floodStack.Num()) {
+			FVector2D pos = floodStack.Pop();
+			for (int32 k = 0; k < 4; k++) {
+				int32 ti = pos.X + di[k];
+				int32 tj = pos.Y + dj[k];
+				if (ti >= 0 && ti < Width && tj >= 0 && tj < Width) {
+					if (!fillMask[ti][tj] && heights[ti][tj] < h) {
+						fillMask[ti][tj] = true;
+						floodStack.Add(FVector2D(ti, tj));
+					}
+				}
+			}
+		}
+		// set all unflooded tiles lower than h to to h
+		for (int32 i = 0; i < Width; i++) {
+			for (int32 j = 0; j < Width; j++) {
+				if (!fillMask[i][j] && heights[i][j] < h) {
+					heights[i][j] = h;
+				}
+			}
+		}
+	}
+
 	// create mountain columns based on heightfield
 	for (int32 i = 0; i < Width; i++) {
 		for (int32 j = 0; j < Width; j++) {
@@ -110,6 +147,8 @@ void AMountainActor::UpdateMountain() {
 			cubeTransform.SetLocation(FVector(100 * i, 100 * j, 100* heights[i][j]*0.5f) + originOffset);
 			cubeTransform.SetScale3D(FVector(1, 1, heights[i][j]));
 			InstancedComponent->AddInstance(cubeTransform);
+			if (heights[i][j] == 1)
+				BeachTops.Add((RootComponent->RelativeLocation + FVector(100 * i, 100 * j, 100 * heights[i][j]) + originOffset) * RootComponent->RelativeScale3D);
 		}
 	}
 
