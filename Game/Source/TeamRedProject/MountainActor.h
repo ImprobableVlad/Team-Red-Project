@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = UpdateMountain, Category = MountainParameters)
 	int32 Seed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MountainParameters)
+	TArray<FVector> BeachTops;
+
 	UFUNCTION(BlueprintCallable, Category = MountainParameters)
 	void UpdateMountain();
 };
